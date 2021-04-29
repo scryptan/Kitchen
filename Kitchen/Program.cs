@@ -12,7 +12,7 @@ namespace Kitchen
             new Recipe()
             {
                 Name = "Шашлык",
-                Time = TimeForEat.Lunch | TimeForEat.Lunch,
+                Time = TimeForEat.Party | TimeForEat.Lunch,
                 Dishes = new List<Dish>
                 {
                     Dish.Skewer,
@@ -121,7 +121,7 @@ namespace Kitchen
                     {ProductEnum.Flour, 300},
                 }
             },
-            
+
             new Recipe()
             {
                 Name = "Чебурек",
@@ -142,7 +142,7 @@ namespace Kitchen
             },
         };
 
-        static void Main(string[] args)
+        static void Main()
         {
             var productCount = new Dictionary<ProductEnum, int>();
 
@@ -170,21 +170,39 @@ namespace Kitchen
 
             if (!Enum.TryParse<TimeForEat>(Console.ReadLine(), true, out var timeForEat))
                 timeForEat = TimeForEat.Breakfast;
-            
-            int peopleToEat;
-            Console.WriteLine("Введите количество персон для еды (в целых штуках, при неправильнтом вводе будет выбран 1)");
-            if (!int.TryParse(Console.ReadLine(), out peopleToEat))
+
+            Console.WriteLine(
+                "Введите количество персон для еды (в целых штуках, при неправильнтом вводе будет выбран 1)");
+            if (!int.TryParse(Console.ReadLine(), out var peopleToEat))
                 peopleToEat = 1;
-            
-            Console.WriteLine("По вашим данным подходят эти рецепты:");
-            var reciepts = Recipes
+
+            var recipes = Recipes
                 .Where(x => x.Time == timeForEat)
-                .Where(x => x.Dishes.All(c => dishes.ContainsKey(c) && dishes[c]));
+                .Where(x => x.Dishes.All(c => dishes.ContainsKey(c) && dishes[c]))
+                .ToList();
+            var countSorted = recipes
+                .Where(c => c.ProductCount.All(x =>
+                    productCount.ContainsKey(x.Key) && productCount[x.Key] * peopleToEat >= x.Value))
+                .ToList();
             
-            foreach (var recipe in reciepts)
+            if (countSorted.Any())
             {
-                if(recipe.ProductCount.All(x => productCount.ContainsKey(x.Key) && productCount[x.Key] * peopleToEat >= x.Value))
+                Console.WriteLine("По вашим данным подходят эти рецепты:");
+
+                foreach (var recipe in countSorted)
                     Console.WriteLine(recipe);
+            }
+            else
+            {
+                Console.WriteLine("Нет подходящих рецептов :(");
+                foreach (var recipe in recipes)
+                {
+                    Console.WriteLine($"Для рецепта {recipe.Name} вам понадобится:");
+                    foreach (var product in recipe.ProductCount)
+                    {
+                        Console.WriteLine($"{product.Key}: {product.Value} у.е");
+                    }
+                }
             }
         }
     }
