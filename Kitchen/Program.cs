@@ -5,9 +5,9 @@ using System.Text;
 
 namespace Kitchen
 {
-    class Program
+    public class Program
     {
-        private static List<Recipe> Recipes = new List<Recipe>()
+        public static List<Recipe> Recipes = new List<Recipe>()
         {
             new Recipe()
             {
@@ -142,6 +142,26 @@ namespace Kitchen
             },
         };
 
+        public static List<Recipe> ReturnReliableRecipes(List<Recipe> recipes, 
+                                                  TimeForEat timeForEat,
+                                                  Dictionary<Dish, bool> dishes)
+        {
+            return recipes
+                 .Where(x => x.Time == timeForEat)
+                 .Where(x => x.Dishes.All(c => dishes.ContainsKey(c) && dishes[c]))
+                 .ToList();
+        }
+
+        public static List<Recipe> CalculatePortions(List<Recipe> recipes, 
+                                                     Dictionary<ProductEnum, int> productCount,
+                                                     int peopleToEat)
+        {
+            return recipes
+                .Where(c => c.ProductCount.All(x =>
+                    productCount.ContainsKey(x.Key) && productCount[x.Key] * peopleToEat >= x.Value))
+                .ToList();
+        }
+
         static void Main()
         {
             var productCount = new Dictionary<ProductEnum, int>();
@@ -176,14 +196,8 @@ namespace Kitchen
             if (!int.TryParse(Console.ReadLine(), out var peopleToEat))
                 peopleToEat = 1;
 
-            var recipes = Recipes
-                .Where(x => x.Time == timeForEat)
-                .Where(x => x.Dishes.All(c => dishes.ContainsKey(c) && dishes[c]))
-                .ToList();
-            var countSorted = recipes
-                .Where(c => c.ProductCount.All(x =>
-                    productCount.ContainsKey(x.Key) && productCount[x.Key] * peopleToEat >= x.Value))
-                .ToList();
+            var recipes = ReturnReliableRecipes(Recipes, timeForEat, dishes);
+            var countSorted = CalculatePortions(recipes, productCount, peopleToEat);
             
             if (countSorted.Any())
             {
@@ -207,7 +221,7 @@ namespace Kitchen
         }
     }
 
-    class Recipe
+    public class Recipe
     {
         public string Name { get; set; }
         public Dictionary<ProductEnum, int> ProductCount { get; set; } = new();
@@ -225,7 +239,7 @@ namespace Kitchen
         }
     }
 
-    enum Dish
+    public enum Dish
     {
         Pot,
         Pan,
@@ -237,7 +251,7 @@ namespace Kitchen
     }
 
     [Flags]
-    enum TimeForEat
+    public enum TimeForEat
     {
         Breakfast,
         Lunch,
@@ -245,7 +259,7 @@ namespace Kitchen
         Party
     }
 
-    enum ProductEnum
+    public enum ProductEnum
     {
         Meat,
         Apple,
