@@ -180,11 +180,13 @@ namespace Kitchen
                 .Where(x => x.Time == timeForEat)
                 .Where(x => x.Dishes.All(c => dishes.ContainsKey(c) && dishes[c]))
                 .ToList();
+
             var countSorted = recipes
-                .Where(c => c.ProductCount.All(x =>
-                    productCount.ContainsKey(x.Key) && productCount[x.Key] * peopleToEat >= x.Value))
+                .Where(c => c.ProductCount.All(
+                    x => productCount.ContainsKey(x.Key) && productCount[x.Key] >= x.Value * peopleToEat
+                ))
                 .ToList();
-            
+
             if (countSorted.Any())
             {
                 Console.WriteLine("По вашим данным подходят эти рецепты:");
@@ -200,7 +202,7 @@ namespace Kitchen
                     Console.WriteLine($"Для рецепта {recipe.Name} вам понадобится:");
                     foreach (var product in recipe.ProductCount)
                     {
-                        Console.WriteLine($"{product.Key}: {product.Value} у.е");
+                        Console.WriteLine($"{product.Key}: {product.Value * peopleToEat} у.е");
                     }
                 }
             }
