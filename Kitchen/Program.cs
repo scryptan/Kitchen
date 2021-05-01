@@ -158,7 +158,7 @@ namespace Kitchen
         {
             return recipes
                 .Where(c => c.ProductCount.All(x =>
-                    productCount.ContainsKey(x.Key) && productCount[x.Key] * peopleToEat >= x.Value))
+                    productCount.ContainsKey(x.Key) && productCount[x.Key] >= x.Value * peopleToEat))
                 .ToList();
         }
 
