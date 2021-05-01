@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using Kitchen;
 using System;
 using System.Linq;
+using FluentAssertions;
 
 namespace KitchenTests
 {
-    public class MealTests
+        public class MealTests
     {
         [Test]
         public void SingleRecipe3PersonsTest()
@@ -138,16 +139,44 @@ namespace KitchenTests
             //Assert
             Assert.AreEqual(testResult, finalRecipes);
         }
+        
+        [Test]
+        public void NoOneDishForBreakfast()
+        {
+            //Declare
+            var recipes = Program.Recipes;
+            var timeToEat = TimeForEat.Breakfast;
+            var productCount = ValuesDictionaryFiller(new Dictionary<ProductEnum, int>(), 0);
+            var dishes = new Dictionary<Dish, bool>();
+            var people = 3;
+            var testResult = new List<Recipe>();
 
+            //Valuing
+            foreach (var dish in Enum.GetValues<Dish>())
+                dishes.Add(dish, false);
 
+            foreach (var recipe in recipes)
+                if (recipe.Time.Equals(TimeForEat.Breakfast))
+                    testResult.Add(recipe);
+
+            //Act
+            var foundedRecipes = Program.ReturnReliableRecipes(recipes, timeToEat, dishes);
+            var finalRecipes = Program.CalculatePortions(foundedRecipes, productCount, people);
+
+            //Assert
+            finalRecipes.Should().BeEmpty();
+        }
 
         private Dictionary<ProductEnum, int> ValuesDictionaryFiller(Dictionary<ProductEnum, int> dict, int value)
         {
             foreach (var product in Enum.GetValues<ProductEnum>())
             {
                 dict.Add(product, value);
-            };
+            }
+
             return dict;
         }
     }
+
+
 }
