@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Kitchenasdasdasd
+namespace Kitchen
 {
     public class Program
     {
@@ -198,11 +198,7 @@ namespace Kitchenasdasdasd
 
             var recipes = ReturnReliableRecipes(Recipes, timeForEat, dishes);
             var countSorted = CalculatePortions(recipes, productCount, peopleToEat);
-
-                .Where(c => c.ProductCount.All(x =>
-                    productCount.ContainsKey(x.Key) && productCount[x.Key] * peopleToEat >= x.Value))
-                ))
-
+            
             if (countSorted.Any())
             {
                 Console.WriteLine("По вашим данным подходят эти рецепты:");
@@ -218,7 +214,7 @@ namespace Kitchenasdasdasd
                     Console.WriteLine($"Для рецепта {recipe.Name} вам понадобится:");
                     foreach (var product in recipe.ProductCount)
                     {
-                        Console.WriteLine($"{product.Key}: {product.Value * peopleToEat} у.е");
+                        Console.WriteLine($"{product.Key}: {product.Value} у.е");
                     }
                 }
             }
