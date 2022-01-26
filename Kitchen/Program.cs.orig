@@ -196,13 +196,23 @@ namespace Kitchen
             if (!int.TryParse(Console.ReadLine(), out var peopleToEat))
                 peopleToEat = 1;
 
+<<<<<<< HEAD
+            var recipes = Recipes
+                .Where(x => x.Time == timeForEat)
+                .Where(x => x.Dishes.All(c => dishes.ContainsKey(c) && dishes[c]))
+                .ToList();
+
+            var countSorted = recipes
+                .Where(c => c.ProductCount.All(
+                    x => productCount.ContainsKey(x.Key) && productCount[x.Key] >= x.Value * peopleToEat
+                ))
+                .ToList();
+
+=======
             var recipes = ReturnReliableRecipes(Recipes, timeForEat, dishes);
             var countSorted = CalculatePortions(recipes, productCount, peopleToEat);
-
-                .Where(c => c.ProductCount.All(x =>
-                    productCount.ContainsKey(x.Key) && productCount[x.Key] * peopleToEat >= x.Value))
-                ))
-
+            
+>>>>>>> origin/tryTests
             if (countSorted.Any())
             {
                 Console.WriteLine("По вашим данным подходят эти рецепты:");
